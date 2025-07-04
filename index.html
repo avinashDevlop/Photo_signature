@@ -1,34 +1,78 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Basic Meta -->
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/image.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Photo + Signature Merger</title>
+    <title>Photo + Signature Merger | Merge Signature on Photo Online</title>
+    <link rel="icon" type="image/png" href="/image.png" />
 
     <!-- SEO Meta Tags -->
-    <meta name="title" content="Photo + Signature Merger" />
-    <meta name="description" content="A simple React app to merge photo and signature using HTML5 Canvas. Supports multiple persons and download options." />
-    <meta name="keywords" content="photo signature, merge, react app, image editor, canvas, signature tool" />
+    <meta name="title" content="Photo + Signature Merger | Merge Signature on Photo Online" />
+    <meta name="description" content="Free and simple React web app to merge a signature with a photo. Upload photo and signature, preview and download merged images. Perfect for ID cards, forms, and certificates. No login needed." />
+    <meta name="keywords" content="photo signature, signature photo merge, merge signature on photo, photo with signature, sign on photo, signature image, signature overlay, digital signature, add signature to image, combine signature and photo, canvas image merger, react photo editor, image processing, online signature merger, image signature tool, digital photo signature app, signature generator on image, sign my photo" />
     <meta name="author" content="Avinash" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
 
-    <!-- Social Media Meta Tags (Open Graph for Facebook) -->
+    <!-- Canonical Link -->
+    <link rel="canonical" href="https://yourdomain.com" />
+
+    <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Photo + Signature Merger" />
-    <meta property="og:description" content="Upload a photo and signature, merge them instantly, and download. Works fully in browser." />
-    <meta property="og:image" content="/image.png" />
     <meta property="og:url" content="https://yourdomain.com" />
+    <meta property="og:title" content="Photo + Signature Merger | Merge Signature on Photo Online" />
+    <meta property="og:description" content="Upload a photo and signature, merge them instantly using a browser-based React app. Supports multiple people. Works on mobile and desktop." />
+    <meta property="og:image" content="/image.png" />
 
-    <!-- Twitter Card -->
+    <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Photo + Signature Merger" />
-    <meta name="twitter:description" content="Merge photo and signature using this lightweight React app." />
+    <meta name="twitter:url" content="https://yourdomain.com" />
+    <meta name="twitter:title" content="Photo + Signature Merger | Merge Sign on Photo" />
+    <meta name="twitter:description" content="Merge your photo with a signature instantly online. Great for forms, ID cards, certificates, and more. No backend needed." />
     <meta name="twitter:image" content="/image.png" />
 
+    <!-- Web App Metadata (Optional) -->
+    <meta name="application-name" content="PhotoSignature" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Preload Fonts (Optional Performance Boost) -->
+    <!-- <link rel="preload" href="/fonts/YourFont.woff2" as="font" type="font/woff2" crossorigin="anonymous" /> -->
+
+    <!-- Apple Devices -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="PhotoSignature" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- Manifest (Optional for PWA support) -->
+    <!-- <link rel="manifest" href="/manifest.json" /> -->
+
+    <!-- Style (Optional fallback for no JS) -->
+    <noscript>
+      <style>
+        .noscript-msg {
+          display: block;
+          padding: 2rem;
+          background-color: #fef2f2;
+          color: #b91c1c;
+          text-align: center;
+          font-size: 1.2rem;
+          font-weight: bold;
+        }
+      </style>
+    </noscript>
   </head>
-  <body>
+  <body class="bg-gray-100 text-gray-900 font-sans">
+    <noscript>
+      <div class="noscript-msg">
+        This app requires JavaScript to run. Please enable it in your browser.
+      </div>
+    </noscript>
+
+    <!-- React App Root -->
     <div id="root"></div>
+
+    <!-- React Entry Point (Vite) -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
