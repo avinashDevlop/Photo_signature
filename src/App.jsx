@@ -83,22 +83,73 @@ function App() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
-    canvas.width = cmToPixels(3.5);
-    canvas.height = cmToPixels(4.5);
+    // Set canvas dimensions to the required size (3.5x4.5cm)
+    const canvasWidth = cmToPixels(3.5);
+    const canvasHeight = cmToPixels(4.5);
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     
+    // Fill with white background
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     const photoImg = new Image();
     photoImg.onload = function() {
-      ctx.drawImage(photoImg, 0, 0, canvas.width, canvas.height);
+      // Calculate aspect ratio and position to fit the photo without cropping
+      const photoAspect = photoImg.width / photoImg.height;
+      const canvasAspect = canvasWidth / (canvasHeight - cmToPixels(1.5)); // Leave space for signature
+      
+      let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+      
+      if (photoAspect > canvasAspect) {
+        // Photo is wider than available space - fit to width
+        drawWidth = canvasWidth;
+        drawHeight = drawWidth / photoAspect;
+        offsetY = ((canvasHeight - cmToPixels(1.5)) - drawHeight) / 2; // Center vertically in photo area
+      } else {
+        // Photo is taller than available space - fit to height
+        drawHeight = canvasHeight - cmToPixels(1.5);
+        drawWidth = drawHeight * photoAspect;
+        offsetX = (canvasWidth - drawWidth) / 2; // Center horizontally
+      }
+      
+      // Draw the photo centered and scaled proportionally
+      ctx.drawImage(photoImg, offsetX, offsetY, drawWidth, drawHeight);
       
       const sigImg = new Image();
       sigImg.onload = function() {
-        const sigHeight = cmToPixels(1.5);
-        const sigWidth = cmToPixels(3.5);
-        ctx.drawImage(sigImg, 0, canvas.height - sigHeight, sigWidth, sigHeight);
+        // Signature area dimensions (3.5x1.5cm)
+        const sigAreaHeight = cmToPixels(1.5);
+        const sigAreaWidth = canvasWidth;
         
+        // Calculate aspect ratio and position for signature
+        const sigAspect = sigImg.width / sigImg.height;
+        const sigAreaAspect = sigAreaWidth / sigAreaHeight;
+        
+        let sigDrawWidth, sigDrawHeight, sigOffsetX = 0, sigOffsetY = 0;
+        
+        if (sigAspect > sigAreaAspect) {
+          // Signature is wider than target area - fit to width
+          sigDrawWidth = sigAreaWidth;
+          sigDrawHeight = sigDrawWidth / sigAspect;
+          sigOffsetY = (sigAreaHeight - sigDrawHeight) / 2;
+        } else {
+          // Signature is taller than target area - fit to height
+          sigDrawHeight = sigAreaHeight;
+          sigDrawWidth = sigDrawHeight * sigAspect;
+          sigOffsetX = (sigAreaWidth - sigDrawWidth) / 2;
+        }
+        
+        // Draw the signature centered in its area
+        ctx.drawImage(
+          sigImg, 
+          sigOffsetX, 
+          canvasHeight - sigAreaHeight + sigOffsetY, 
+          sigDrawWidth, 
+          sigDrawHeight
+        );
+        
+        // Compress and download
         compressImage(canvas.toDataURL('image/jpeg', quality), 100, (compressedDataUrl) => {
           const link = document.createElement('a');
           link.download = `person-${index + 1}-${dpi}dpi.jpg`;
@@ -217,13 +268,16 @@ function App() {
                     <div 
                       className="upload-box photo-upload" 
                       onClick={() => triggerFileInput(person.id, 'photo')}
-                      style={{
-                        width: `${cmToPixels(3.5)}px`,
-                        height: `${cmToPixels(4.5)}px`
-                      }}
                     >
                       {person.photo ? (
-                        <img src={person.photo} alt="Uploaded photo" className="preview-image" />
+                        <div className="image-container">
+                          <img 
+                            src={person.photo} 
+                            alt="Uploaded photo" 
+                            className="preview-image"
+                            style={{ objectFit: 'contain' }}
+                          />
+                        </div>
                       ) : (
                         <div className="upload-placeholder">
                           <div className="upload-icon">
@@ -248,13 +302,16 @@ function App() {
                     <div 
                       className="upload-box signature-upload"
                       onClick={() => triggerFileInput(person.id, 'signature')}
-                      style={{
-                        width: `${cmToPixels(3.5)}px`,
-                        height: `${cmToPixels(1.5)}px`
-                      }}
                     >
                       {person.signature ? (
-                        <img src={person.signature} alt="Uploaded signature" className="preview-image" />
+                        <div className="image-container">
+                          <img 
+                            src={person.signature} 
+                            alt="Uploaded signature" 
+                            className="preview-image"
+                            style={{ objectFit: 'contain' }}
+                          />
+                        </div>
                       ) : (
                         <div className="upload-placeholder">
                           <div className="upload-icon">
@@ -333,27 +390,61 @@ function App() {
                   <div className="merged-card-header">
                     <h3>Person {index + 1}</h3>
                   </div>
-                  <div 
-                    className="merged-image-container"
-                    style={{
-                      width: `${cmToPixels(3.5)}px`,
-                      height: `${cmToPixels(4.5)}px`
-                    }}
-                  >
-                    {person.photo && <img src={person.photo} alt={`Person ${index + 1} photo`} className="merged-photo" />}
-                    {person.signature && (
-                      <div 
-                        className="merged-signature-container"
-                        style={{
-                          width: `${cmToPixels(3.5)}px`,
-                          height: `${cmToPixels(1.5)}px`,
-                          bottom: '0',
-                          left: '0'
-                        }}
-                      >
-                        <img src={person.signature} alt={`Person ${index + 1} signature`} className="merged-signature" />
-                      </div>
-                    )}
+                  <div className="merged-preview-container">
+                    <div 
+                      className="merged-image-preview"
+                      style={{
+                        width: `${cmToPixels(3.5)}px`,
+                        height: `${cmToPixels(4.5)}px`,
+                        position: 'relative',
+                        backgroundColor: 'white',
+                        border: '1px solid #ddd',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {person.photo && (
+                        <img 
+                          src={person.photo} 
+                          alt={`Person ${index + 1} photo`} 
+                          style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            maxWidth: '100%',
+                            maxHeight: `${cmToPixels(4.5) - cmToPixels(1.5)}px`,
+                            width: 'auto',
+                            height: 'auto'
+                          }}
+                        />
+                      )}
+                      {person.signature && (
+                        <div 
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            width: '100%',
+                            height: `${cmToPixels(1.5)}px`,
+                            backgroundColor: 'white',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderTop: '1px dashed #ccc'
+                          }}
+                        >
+                          <img 
+                            src={person.signature} 
+                            alt={`Person ${index + 1} signature`} 
+                            style={{
+                              maxWidth: '90%',
+                              maxHeight: '90%',
+                              objectFit: 'contain'
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="download-section">
                     <button 
